@@ -1,0 +1,278 @@
+{
+  "exercices": [
+    {
+      "name": "aff_a",
+      "level": 0,
+      "type": "program",
+      "inputs": [
+        []
+      ],
+      "outputs": [
+        "a\n"
+      ]
+    },
+    {
+      "name": "aff_first_param",
+      "level": 0,
+      "type": "program",
+      "inputs": [
+        [
+          "caca",
+          "pipi",
+          "popo"
+        ]
+      ],
+      "outputs": [
+        "caca\n"
+      ]
+    },
+    {
+      "name": "aff_last_param",
+      "level": 0,
+      "type": "program",
+      "inputs": [
+        [
+          "caca",
+          "pipi",
+          "popo"
+        ]
+      ],
+      "outputs": [
+        "popo\n"
+      ]
+    },
+    {
+      "name": "ft_strlen",
+      "level": 1,
+      "type": "function",
+      "inputs": [
+        []
+      ],
+      "outputs": [
+        ""
+      ]
+    },
+    {
+      "name": "repeat_alpha",
+      "level": 1,
+      "type": "program",
+      "inputs": [
+        [
+          "Alex."
+        ]
+      ],
+      "outputs": [
+        "Alllllllllllleeeeexxxxxxxxxxxxxxxxxxxxxxxx.\n"
+      ]
+    },
+    {
+      "name": "ft_swap",
+      "level": 1,
+      "type": "function",
+      "inputs": [],
+      "outputs": [
+        ""
+      ]
+    },
+    {
+      "name": "search_and_replace",
+      "level": 1,
+      "type": "program",
+      "inputs": [
+        [
+          "ZoZ eT Dovid oiME le METol.",
+          "o",
+          "a"
+        ]
+      ],
+      "outputs": [
+        "ZaZ eT David aiME le METal.\n"
+      ]
+    },
+    {
+      "name": "ulstr",
+      "level": 1,
+      "type": "program",
+      "inputs": [
+        [
+          "S'enTOuRer dE sECreT eSt uN sIGnE De mAnQuE De coNNaiSSanCe.  "
+        ]
+      ],
+      "outputs": [
+        "s'ENtoUrER De SecREt EsT Un SigNe dE MaNqUe dE COnnAIssANcE.  \n"
+      ]
+    },
+    {
+      "name": "rot_13",
+      "level": 1,
+      "type": "program",
+      "inputs": [
+        [
+          "AkjhZ zLKIJz , 23y "
+        ]
+      ],
+      "outputs": [
+        "NxwuM mYXVWm , 23l \n"
+      ]
+    },
+    {
+      "name": "ft_strcpy",
+      "level": 1,
+      "type": "function",
+      "inputs": [
+        []
+      ],
+      "outputs": [
+        ""
+      ]
+    },
+    {
+      "name": "first_word",
+      "level": 1,
+      "type": "program",
+      "inputs": [
+        []
+      ],
+      "outputs": [
+        "this\n"
+      ]
+    },
+    {
+      "name": "rev_print",
+      "level": 1,
+      "type": "program",
+      "inputs": [
+        [
+          "dub0 a POIL"
+        ]
+      ],
+      "outputs": [
+        "LIOP a 0bud\n"
+      ]
+    },
+    {
+      "name": "rotone",
+      "level": 1,
+      "type": "program",
+      "inputs": [
+        [
+          "Les stagiaires du staff ne sentent pas toujours tres bon."
+        ]
+      ],
+      "outputs": [
+        "Mft tubhjbjsft ev tubgg of tfoufou qbt upvkpvst usft cpo.\n"
+      ]
+    },
+    {
+      "name": "ft_atoi",
+      "level": 2,
+      "type": "function",
+      "inputs": [
+        []
+      ],
+      "outputs": [
+        ""
+      ]
+    },
+    {
+      "name": "ft_strdup",
+      "level": 2,
+      "type": "function",
+      "inputs": [
+        []
+      ],
+      "outputs": [
+        ""
+      ]
+    },
+    {
+      "name": "inter",
+      "level": 2,
+      "type": "program",
+      "inputs": [
+        [
+          "padinton",
+          "paqefwtdjetyiytjneytjoeyjnejeyj"
+        ]
+      ],
+      "outputs": [
+        "padinto\n"
+      ]
+    },
+    {
+      "name": "last_word",
+      "level": 2,
+      "type": "program",
+      "inputs": [
+        [
+          "FOR PONY"
+        ],
+        [
+          "this        ...       is sparta, then again, maybe    not"
+        ],
+        [
+          "a",
+          "b"
+        ],
+        [
+          "  lorem,ipsum  "
+        ]
+      ],
+      "outputs": [
+        "PONY\n",
+        "not\n",
+        "\n",
+        "lorem,ipsum\n"
+      ]
+    },
+    {
+      "name": "union",
+      "level": 2,
+      "type": "program",
+      "inputs": [
+        [
+          "ddf6vewg64f",
+          "gtwthgdwthdwfteewhrtag6h4ffdhsd"
+        ]
+      ],
+      "outputs": [
+        "df6vewg4thras\n"
+      ]
+    },
+    {
+      "name": "alpha_mirror",
+      "level": 2,
+      "type": "program",
+      "inputs": [
+        [
+          "My horse is Amazing."
+        ]
+      ],
+      "outputs": [
+        "Nb slihv rh Znzarmt.\n"
+      ]
+    },
+    {
+      "name": "ft_strcmp",
+      "level": 2,
+      "type": "function",
+      "inputs": [
+        []
+      ],
+      "outputs": [
+        ""
+      ]
+    },
+    {
+      "name": "ft_rrange",
+      "level": 3,
+      "type": "function",
+      "inputs": [
+        []
+      ],
+      "outputs": [
+        ""
+      ]
+    }
+  ]
+}
