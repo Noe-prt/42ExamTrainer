@@ -105,6 +105,8 @@ void write_underlined_text(std::string text, bool endline_enabled)
 
 bool compile_c_file(const std::string& file_path, const std::string& main_path)
 {
+    if (!std::filesystem::exists(".outputs"))
+        std::filesystem::create_directories(".outputs");
     std::string command = "gcc " + file_path +  " " + main_path  + " -o ./.outputs/output_file";
     int result = std::system(command.c_str());
     return result == 0;
