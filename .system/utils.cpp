@@ -5,6 +5,8 @@
 #include <stdexcept>
 #include <fstream>
 #include <filesystem>
+#include <chrono>
+#include <thread>
 
 
 #ifdef _WIN32
@@ -62,12 +64,12 @@ std::string get_user_home_directory() {
 #endif
 }
 
-void multi_sleep(int seconds)
+void multi_sleep(int mili_seconds)
 {
     #ifdef _WIN32
-        Sleep(seconds * 1000);
+        Sleep(mili_seconds * 1000);
     #else
-        sleep(seconds);
+        usleep(mili_seconds * 1000);
     #endif
 }
 
@@ -77,6 +79,26 @@ void write_colored_text(std::string text, std::string ansi_color, bool endline_e
     if (endline_enabled)
         std::cout << text << std::endl;
     else
+        std::cout << text;
+    std::cout << "\033[0m";
+}
+
+void write_bold_text(std::string text, bool endline_enabled)
+{
+    std::cout << "\033[1m";
+    if (endline_enabled)
+        std::cout << text << std::endl;
+    else   
+        std::cout << text;
+    std::cout << "\033[0m";
+}
+
+void write_underlined_text(std::string text, bool endline_enabled)
+{
+    std::cout << "\033[4m";
+    if (endline_enabled)
+        std::cout << text << std::endl;
+    else   
         std::cout << text;
     std::cout << "\033[0m";
 }
@@ -96,6 +118,7 @@ std::string run_compiled_file(const std::vector<std::string>& args)
         command += " \"" + arg + "\"";
     }
     command += " > .outputs/temp_output.txt";
+    
     std::system(command.c_str());
     std::ifstream output_file(".outputs/temp_output.txt");
     std::stringstream buffer;
@@ -111,48 +134,41 @@ bool grade_me(const std::string& exercice_name)
     std::string c_file_name;
 
     exercices_list = ExerciceData::get_exercices(".data/exercices.json");
-    try // grade only if the name of the exerice is correct
-    {
-        c_file_name = get_user_home_directory() + "/42-Exam/rendu/" + exercice_name + "/" + exercice_name + ".c";
+    c_file_name = get_user_home_directory() + "/42-Exam/rendu/" + exercice_name + "/" + exercice_name + ".c";
 
-        if (!std::filesystem::exists(c_file_name))
-            return false;
-        ExerciceData exercice = ExerciceData::get_exercice(exercice_name);
-        if (exercice.is_function)
+    if (!std::filesystem::exists(c_file_name))
+        return false;
+    ExerciceData exercice = ExerciceData::get_exercice(exercice_name);
+    if (exercice.is_function)
+    {
+        main_file = ".mains/" + exercice_name + "_main.c";
+        if (compile_c_file(c_file_name, main_file))
         {
-            main_file = ".mains/" + exercice_name + "_main.c";
-            if (compile_c_file(c_file_name, main_file))
+            std::string output = run_compiled_file(exercice.inputs[0]); // 0 by default because it's a function
+            if (output == "S")
+                return true;
+            else
+                return false;
+        }
+        else
+            return false;
+    }
+    else
+    {
+        if (compile_c_file(c_file_name, main_file))
+        {
+            for (int i = 0; i < exercice.inputs.size(); i++)
             {
-                std::string output = run_compiled_file(exercice.inputs[0]); // 0 by default because it's a function
-                if (output == "S")
-                    return true;
-                else
+                std::string output = run_compiled_file(exercice.inputs[i]);
+                if (output != exercice.outputs[i])
                     return false;
             }
+            return true;
         }
         else
         {
-            if (compile_c_file(c_file_name, main_file))
-            {
-                for (int i = 0; i < exercice.inputs.size(); i++)
-                {
-                    std::string output = run_compiled_file(exercice.inputs[i]);
-                    if (output != exercice.outputs[i])
-                        return false;
-                }
-                return true;
-            }
-            else
-            {
-                std::cout << "failure on compile" << std::endl;
-            }
+            return false;
         }
     }
-    catch (const std::exception& e)
-    {
-        return false;
-    }
-
-    return true;
 }
 

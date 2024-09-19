@@ -122,42 +122,29 @@ void ExerciceGrading::display_grading_page(ExerciceData exercice)
         std::cout << ">";
         std::cin >> option;
     }
+    std::cout << "Please be ";
+    write_colored_text("patient", "\x1b[38;5;46m", false);
+    std::cout << ", this ";
+    write_colored_text("CAN ", "\x1b[38;5;46m", false);
+    std::cout << "take several minutes..." << std::endl;
+    std::cout << "(10 seconds is fast, 30 seconds is expected, 3 minutes is a maximum)" << std::endl;
+    multi_sleep(2000);
+    std::cout << "waiting..." << std::endl;
+    multi_sleep(2000);
+    std::cout << "waiting..." << std::endl;
+    multi_sleep(2000);
+    std::cout << "waiting..." << std::endl;
+    multi_sleep(2000);
     if (grade_me(exercice.name))
     {
-        std::cout << "Please be ";
-        write_colored_text("patient", "\e[0; 32m", false);
-        std::cout << ", this ";
-        write_colored_text("CAN ", "\e[0; 32m", false);
-        std::cout << "take several minutes..." << std::endl;
-        std::cout << "(10 seconds is fast, 30 seconds is expected, 3 minutes is a maximum)" << std::endl;
-        multi_sleep(2);
-        std::cout << "waiting..." << std::endl;
-        multi_sleep(2);
-        std::cout << "waiting..." << std::endl;
-        multi_sleep(2);
-        std::cout << "waiting..." << std::endl;
-        multi_sleep(2);
         write_colored_text("<<<<<<<<<< SUCCESS >>>>>>>>>>", "\x1b[38;5;10m", true);
-        multi_sleep(2);
+        multi_sleep(2000);
         return ExerciceGrading::on_select_function();
     }
     else
     {
-        std::cout << "Please be ";
-        write_colored_text("patient", "\e[0;32m", false);
-        std::cout << ", this ";
-        write_colored_text("CAN ", "\e[0;32m", false);
-        std::cout << "take several minutes..." << std::endl;
-        std::cout << "(10 seconds is fast, 30 seconds is expected, 3 minutes is a maximum)" << std::endl;
-        multi_sleep(2);
-        std::cout << "waiting..." << std::endl;
-        multi_sleep(2);
-        std::cout << "waiting..." << std::endl;
-        multi_sleep(2);
-        std::cout << "waiting..." << std::endl;
-        multi_sleep(2);
         write_colored_text("<<<<<<<<<< FAILURE >>>>>>>>>>", "\x1b[31m", true);
-        multi_sleep(2);
+        multi_sleep(2000);
         return ExerciceGrading::display_grading_page(exercice);
     }
 }

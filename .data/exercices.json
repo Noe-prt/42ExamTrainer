@@ -69,7 +69,9 @@
       "name": "ft_swap",
       "level": 1,
       "type": "function",
-      "inputs": [],
+      "inputs": [
+        []
+      ],
       "outputs": [
         ""
       ]
