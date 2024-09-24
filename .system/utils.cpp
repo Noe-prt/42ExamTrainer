@@ -129,6 +129,22 @@ std::string run_compiled_file(const std::vector<std::string>& args)
     return buffer.str();
 }
 
+int ft_atoi(const std::string str)
+{
+    int res;
+    int i;
+
+    res = 0;
+    i = 0;
+
+    while (str[i] && str[i] >= '0' && str[i] <= '9')
+    {
+        res = res * 10 + (str[i] - 48);
+        i++;
+    }
+    return (res);
+}
+
 bool grade_me(const std::string& exercice_name)
 {
     std::vector<ExerciceData> exercices_list;
@@ -136,7 +152,7 @@ bool grade_me(const std::string& exercice_name)
     std::string c_file_name;
 
     exercices_list = ExerciceData::get_exercices(".data/exercices.json");
-    c_file_name = get_user_home_directory() + "/42-Exam/rendu/" + exercice_name + "/" + exercice_name + ".c";
+    c_file_name = get_user_home_directory() + "/42-EXAM/rendu/" + exercice_name + "/" + exercice_name + ".c";
 
     if (!std::filesystem::exists(c_file_name))
         return false;

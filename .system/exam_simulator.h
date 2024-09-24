@@ -1,6 +1,7 @@
 #pragma once
 
 #include "option.h"
+#include "exercice_data.h"
 
 using namespace std;
 
@@ -14,6 +15,9 @@ public:
 private:
     int current_grade;
     int current_level;
-    int exercice_index;
+    int grade_index;
+    int exercice_xp;
     int max_grade;
+    ExerciceData current_exercice;
+    void set_current_exercice();
 };

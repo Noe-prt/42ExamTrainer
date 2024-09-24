@@ -16,4 +16,5 @@ public:
     static ExerciceData get_exercice(const std::string& exercice_name);
     static std::vector<ExerciceData> get_exercises_by_level(const std::vector<ExerciceData>& exercises, int level);
     static ExerciceData get_exercice_by_index(int ex_index);
+    static ExerciceData get_random_exercice(const std::vector<ExerciceData>& exercices);
 };

@@ -4,8 +4,10 @@
 #include <fstream>
 #include <string>
 #include <sstream>
+#include <string>
 #include <iostream>
 #include <filesystem>
+#include <limits>
 
 #ifdef _WIN32
     #include <windows.h>
@@ -20,43 +22,32 @@ ExerciceGrading::ExerciceGrading()
     exercices_list = ExerciceData::get_exercices(".data/exercices.json");
 }
 
-#include <iostream>
-#include <limits>  // Pour std::numeric_limits
+  // Pour std::numeric_limits
 
 void ExerciceGrading::on_select_function()
 {
     Option::on_select_function();
     display_exercices();
     display_grading_page(get_selected_exercice());
+
 }
 
 ExerciceData ExerciceGrading::get_selected_exercice()
 {
-    string input;
+    std::string input;
     int exercice_index;
-    std::cout << "Please, Choose an exercice index to continue..." << std::endl;
-    cin >> input;
     std::vector<ExerciceData> exercices = ExerciceData::get_exercices(".data/exercices.json");
-    try
+    while (true) 
     {
-        exercice_index = std::stoi(input);
-        ExerciceData exercice = ExerciceData::get_exercice_by_index(exercice_index);
-        return exercice;
-    }
-    catch (const std::invalid_argument& e)
-    {
-        write_colored_text("Invalid option! Please try again", "\x1b[31m", true);
-        return ExerciceGrading::get_selected_exercice();
-    }
-    catch (const std::out_of_range& e)
-    {
-        write_colored_text("Invalid option! Please try again", "\x1b[31m", true);
-        return ExerciceGrading::get_selected_exercice();
-    }
-    catch (std::runtime_error& e)
-    {
-        write_colored_text("Invalid option! Please try again", "\x1b[31m", true);
-        return ExerciceGrading::get_selected_exercice();
+        std::getline(std::cin, input);
+        exercice_index = ft_atoi(input);
+        if (exercice_index > 0 && exercice_index <= exercices.size())
+        {
+            ExerciceData ex = ExerciceData::get_exercice_by_index(exercice_index);
+            return ex;
+        }
+        else
+            write_colored_text("ERROR: Not a valid exercice index!", "\e[91m", true);
     }
 }
 
@@ -98,54 +89,85 @@ void ExerciceGrading::display_grading_page(ExerciceData exercice)
         system("clear");
     #endif
     std::string home_directory = get_user_home_directory();
-    std::filesystem::path exercice_dir = home_directory + "/42-Exam/rendu/" + exercice.name;
+    std::filesystem::path exercice_dir = home_directory + "/42-EXAM/rendu/" + exercice.name;
     if (!std::filesystem::exists(exercice_dir))
         std::filesystem::create_directories(exercice_dir);
     std::string option;
     std::cout << "=================================================================================" << std::endl;
     std::cout << "You selected ";
-    write_colored_text(exercice.name, "\x1b[31m", false);
-    std::cout << ", to be graded, type: ";
-    write_colored_text("grademe", "\x1b[31m", true);
+    write_colored_text(exercice.name, "\x1b[31m", true);
     std::cout << "Exercice Location:";
-    write_colored_text(" ~/42-Exam/rendu/" + exercice.name, "\x1b[31m", true);
+    write_colored_text(" ~/42-EXAM/rendu/" + exercice.name, "\x1b[31m", true);
     std::cout << "Exercice Level: ";
     write_colored_text(std::to_string(exercice.level), "\x1b[31m", true);
     std::cout << "================================== SUBJECT ======================================" << std::endl;
     display_subject(".subjects/" + exercice.name + ".txt");
-    write_colored_text("grademe", "\x1b[38;5;11m", false);
-    std::cout << ">";
-    std::cin >> option;
-    while (option != "grademe")
+    std::cout << "" << std::endl;
+    std::cout << "=================================================================================" << std::endl;
+    std::cout << "Use the \"";
+    write_colored_text("grademe", "\x1b[38;5;46m", false);
+    std::cout << "\" command to be graded, or \"";
+    write_colored_text("help", "\x1b[38;5;46m", false);
+    std::cout << "\" to get some help." << std::endl;
+    while (1)
     {
-        write_colored_text("grademe", "\x1b[38;5;11m", false);
-        std::cout << ">";
-        std::cin >> option;
-    }
-    std::cout << "Please be ";
-    write_colored_text("patient", "\x1b[38;5;46m", false);
-    std::cout << ", this ";
-    write_colored_text("CAN ", "\x1b[38;5;46m", false);
-    std::cout << "take several minutes..." << std::endl;
-    std::cout << "(10 seconds is fast, 30 seconds is expected, 3 minutes is a maximum)" << std::endl;
-    multi_sleep(2000);
-    std::cout << "waiting..." << std::endl;
-    multi_sleep(2000);
-    std::cout << "waiting..." << std::endl;
-    multi_sleep(2000);
-    std::cout << "waiting..." << std::endl;
-    multi_sleep(2000);
-    if (grade_me(exercice.name))
-    {
-        write_colored_text("<<<<<<<<<< SUCCESS >>>>>>>>>>", "\x1b[38;5;10m", true);
-        multi_sleep(2000);
-        return ExerciceGrading::on_select_function();
-    }
-    else
-    {
-        write_colored_text("<<<<<<<<<< FAILURE >>>>>>>>>>", "\x1b[31m", true);
-        multi_sleep(2000);
-        return ExerciceGrading::display_grading_page(exercice);
+        write_colored_text("examshell", "\x1b[38;5;11m", false);
+        std::cout << "> ";
+        std::getline(std::cin, option);
+        if (option == "grademe")
+        {
+            std::cout << "Please be ";
+            write_colored_text("patient", "\x1b[38;5;46m", false);
+            std::cout << ", this ";
+            write_colored_text("CAN ", "\x1b[38;5;46m", false);
+            std::cout << "take several minutes..." << std::endl;
+            std::cout << "(10 seconds is fast, 30 seconds is expected, 3 minutes is a maximum)" << std::endl;
+            multi_sleep(2000);
+            std::cout << "waiting..." << std::endl;
+            multi_sleep(2000);
+            std::cout << "waiting..." << std::endl;
+            multi_sleep(2000);
+            std::cout << "waiting..." << std::endl;
+            multi_sleep(2000);
+            std::cout << "" << std::endl;
+            if (grade_me(exercice.name))
+            {      
+                write_colored_text("<<<<<<<<<< SUCCESS >>>>>>>>>>", "\x1b[38;5;10m", true);
+                multi_sleep(2000);
+                return ExerciceGrading::on_select_function();
+            }
+            else
+            {
+                write_colored_text("<<<<<<<<<< FAILURE >>>>>>>>>>", "\x1b[31m", true);
+                multi_sleep(2000);
+                return ExerciceGrading::display_grading_page(exercice);
+            }
+        }
+        else if (option == "exit")
+        {
+            std::string str;
+            std::cout << "Are you sure you want to ";
+            write_colored_text("exit", "\e[91m", false);
+            std::cout << " the exam?" << std::endl;
+            std::cout << "All your progress will be ";
+            write_colored_text("lost", "\e[91m", false);
+            std::cout << "." << std::endl;
+            std::cout << "Type ";
+            write_colored_text("yes", "\e[92m", false);
+            std::cout << " to confirm." << std::endl;
+            std::getline(std::cin, str);
+            if (str == "yes")
+                break;
+            else
+                std::cout << " ** Abort **" << std::endl;
+                multi_sleep(1000);
+        }
+        else
+        {
+            std::cout << "         **Unknown command**     type ";
+            write_colored_text("help", "\x1b[38;5;46m", false);
+            std::cout << " for more help" << std::endl;
+        }
     }
 }
 

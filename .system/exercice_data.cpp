@@ -1,6 +1,7 @@
 #include "exercice_data.h"
 #include <fstream>
 #include <algorithm>
+#include <random>
 #include<nlohmann/json.hpp>
 
 std::vector<ExerciceData> ExerciceData::get_exercices(const std::string& filename)
@@ -59,4 +60,13 @@ ExerciceData ExerciceData::get_exercice(const std::string& exercice_name)
             return ex;
     }
     throw std::runtime_error("Exercice not found: " + exercice_name);
+}
+
+ExerciceData ExerciceData::get_random_exercice(const std::vector<ExerciceData>& exercices)
+{
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> distrib(0, exercices.size() - 1);
+    int random_index = distrib(gen);
+    return exercices[random_index];
 }
