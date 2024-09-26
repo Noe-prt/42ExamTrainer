@@ -6,6 +6,8 @@
 #include <fstream>
 #include <filesystem>
 #include <chrono>
+#include <algorithm>
+#include <cctype>
 #include <thread>
 
 

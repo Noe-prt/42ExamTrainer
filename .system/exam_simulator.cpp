@@ -130,30 +130,52 @@ void ExamSimulator::DisplayExamPage()
         std::getline(std::cin, option);
         if (option == "grademe")
         {
-            std::cout << "Please be ";
-            write_colored_text("patient", "\x1b[38;5;46m", false);
-            std::cout << ", this ";
-            write_colored_text("CAN ", "\x1b[38;5;46m", false);
-            std::cout << "take several minutes..." << std::endl;
-            std::cout << "(10 seconds is fast, 30 seconds is expected, 3 minutes is a maximum)" << std::endl;
-            multi_sleep(2000);
-            std::cout << "waiting..." << std::endl;
-            multi_sleep(2000);
-            std::cout << "waiting..." << std::endl;
-            multi_sleep(2000);
-            std::cout << "waiting..." << std::endl;
-            multi_sleep(2000);
+            std::string input;
             std::cout << "" << std::endl;
-            if (grade_me(current_exercice.name))
-            {      
-                write_colored_text("<<<<<<<<<< SUCCESS >>>>>>>>>>", "\x1b[38;5;10m", true);
+            std::cout << "Before continuing, please make ";
+            write_colored_text("ABSOLUTELY SURE", "\e[91m", false);
+            std::cout << " that you are in the right directory," << std::endl;
+            std::cout << "that you didn't forget anything, etc..." << std::endl;
+            std::cout << "If your assignment is wrong, you will have the same assignment" << std::endl;
+            std::cout << "" << std::endl;
+            std::cout << " but with less potential points to earn !" << std::endl;
+            write_colored_text("Are you sure?", "\e[91m", false);
+            std::cout << " [y/N] ";
+            std::getline(std::cin, input);
+            if (input == "y" || input == "Y")
+            {
+                std::cout << "Please be ";
+                write_colored_text("patient", "\x1b[38;5;46m", false);
+                std::cout << ", this ";
+                write_colored_text("CAN ", "\x1b[38;5;46m", false);
+                std::cout << "take several minutes..." << std::endl;
+                std::cout << "(10 seconds is fast, 30 seconds is expected, 3 minutes is a maximum)" << std::endl;
                 multi_sleep(2000);
+                std::cout << "waiting..." << std::endl;
+                multi_sleep(2000);
+                std::cout << "waiting..." << std::endl;
+                multi_sleep(2000);
+                std::cout << "waiting..." << std::endl;
+                multi_sleep(2000);
+                if (grade_me(current_exercice.name))
+                {      
+                    write_colored_text("<<<<<<<<<< SUCCESS >>>>>>>>>>", "\x1b[38;5;10m", true);
+                    multi_sleep(2000);
+                }
+                else
+                {
+                    write_colored_text("<<<<<<<<<< FAILURE >>>>>>>>>>", "\x1b[31m", true);
+                    multi_sleep(700);
+                    std::cout << "You have failed the assignment." << std::endl;
+                    std::cout << "" << std::endl;
+                    std::cout << "(Press enter to continue...)" << std::endl;
+                    std::string input;
+                    std::getline(std::cin, input);
+                }
             }
             else
-            {
-                write_colored_text("<<<<<<<<<< FAILURE >>>>>>>>>>", "\x1b[31m", true);
-                multi_sleep(2000);
-            }
+                std::cout << " Abort" << std::endl;
+            
         }
         else if (option == "exit")
         {
@@ -171,8 +193,10 @@ void ExamSimulator::DisplayExamPage()
             if (str == "yes")
                 break;
             else
+            {
                 std::cout << " ** Abort **" << std::endl;
                 multi_sleep(1000);
+            }
         }
         else
         {
