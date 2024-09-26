@@ -3,6 +3,8 @@
 #include "exercice_data.h"
 #include <fstream>
 #include <string>
+#include <readline/readline.h>
+#include <readline/history.h>
 #include <sstream>
 #include <string>
 #include <iostream>
@@ -111,9 +113,16 @@ void ExerciceGrading::display_grading_page(ExerciceData exercice)
     std::cout << "\" to get some help." << std::endl;
     while (1)
     {
-        write_colored_text("examshell", "\x1b[38;5;11m", false);
-        std::cout << "> ";
-        std::getline(std::cin, option);
+        char *line = readline("\e[93mexamshell\e[0m> ");
+        std::string option = line;
+        free(line);
+        while (option.back() == ' ')
+            option.pop_back();
+        while (option.front() == ' ')
+            option.erase(option.begin());
+        if (option.empty())
+            continue;
+        add_history(option.c_str());
         if (option == "grademe")
         {
             std::string input;

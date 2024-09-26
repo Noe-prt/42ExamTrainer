@@ -3,6 +3,8 @@
 #include <iostream>
 #include <filesystem>
 #include <unistd.h>
+#include <readline/readline.h>
+#include <readline/history.h>
 #include <cstdio>
 #include <cstring>
 #include <pwd.h>
@@ -17,16 +19,23 @@ ExamSimulator::ExamSimulator()
     current_grade = 0;
     max_grade = 100;
     current_level = 0;
-    grade_index = 0;
+    assignment_index = 0;
     exercice_xp = 6;
 }
 
 void ExamSimulator::on_select_function()
 {
     Option::on_select_function();
+    std::string home_directory = get_user_home_directory();
+    std::filesystem::path rendu_dir = std::filesystem::path(home_directory) / "42-EXAM" / "rendu";
+    std::filesystem::path subjects_dir = std::filesystem::path(home_directory) / "42-EXAM" / "subjects";
+    std::filesystem::create_directories(rendu_dir);
+    std::filesystem::create_directories(subjects_dir);
+
     set_current_exercice();
     DisplayExamPage();
 }
+
 
 void ExamSimulator::DisplayExamPage()
 {
@@ -80,54 +89,19 @@ void ExamSimulator::DisplayExamPage()
     std::cout << "\033[0m"; 
     std::cout << "Press a key to start exam 🏁" << std::endl;
     getchar();
-    std::cout << "" << std::endl;
-    std::cout << "==================================================================" << std::endl;
-    std::cout << "Mode: ";
-    write_colored_text("REAL", "\x1b[38;5;13m", false);
-    std::cout << " | Current Grade: ";
-    write_colored_text(std::to_string(current_grade), "\x1b[38;5;46m", false);
-    std::cout << " / " << std::to_string(max_grade) << std::endl;
-    std::cout << "" << std::endl;
-    std::cout << "  Level ";
-    write_colored_text(std::to_string(current_level), "\x1b[38;5;46m", false);
-    std::cout << ":" << std::endl;
-    write_colored_text("    " + std::to_string(grade_index), "\x1b[38;5;11m", false);
-    std::cout << ": ";
-    write_colored_text(current_exercice.name, "\x1b[38;5;46m", false);
-    std::cout << " for ";
-    std::cout << std::to_string(exercice_xp);
-    std::cout << " potential points (";
-    write_colored_text("Current", "\e[36m", false);
-    std::cout << ")" << std::endl;
-    std::cout << "" << std::endl;
-    std::cout << "Assignement: ";
-    write_colored_text(current_exercice.name, "\x1b[38;5;46m", false);
-    std::cout << " for ";
-    write_colored_text(std::to_string(exercice_xp), "\x1b[38;5;46m", false);
-    std::cout << "xp, try: ";
-    write_colored_text("0", "\x1b[38;5;11m", true);
-    std::cout << "" << std::endl;
-    std::cout << "Subject location:  ";
-    write_colored_text("~/42-EXAM/subjects/subject.en.txt", "\x1b[38;5;46m", true);
-    std::cout << "Exercise location: ";
-    write_colored_text("~/42-EXAM/rendu/" + current_exercice.name, "\e[91m", true);
-    std::cout << "" << std::endl;
-    std::cout << "End date: ";
-    write_colored_text("21/09/2024 23:26:38", "\x1b[38;5;46m", true);
-    std::cout << "Left time: ";
-    write_colored_text("7hrs, 59min and 15sec", "\x1b[38;5;46m", true);
-    std::cout << "" << std::endl;
-    std::cout << "==================================================================" << std::endl;
-    std::cout << "Use the \"";
-    write_colored_text("grademe", "\x1b[38;5;46m", false);
-    std::cout << "\" command to be graded, or \"";
-    write_colored_text("help", "\x1b[38;5;46m", false);
-    std::cout << "\" to get some help." << std::endl;
+    display_grading_box();
     while (1)
     {
-        write_colored_text("examshell", "\x1b[38;5;11m", false);
-        std::cout << "> ";
-        std::getline(std::cin, option);
+        char *line = readline("\e[93mexamshell\e[0m> ");
+        std::string option = line;
+        free(line);
+        while (option.back() == ' ')
+            option.pop_back();
+        while (option.front() == ' ')
+            option.erase(option.begin());
+        if (option.empty())
+            continue;
+        add_history(option.c_str());
         if (option == "grademe")
         {
             std::string input;
@@ -161,16 +135,23 @@ void ExamSimulator::DisplayExamPage()
                 {      
                     write_colored_text("<<<<<<<<<< SUCCESS >>>>>>>>>>", "\x1b[38;5;10m", true);
                     multi_sleep(2000);
+                    assignment_data new_assignement{current_exercice, true};
+                    assignments_history.push_back(new_assignement);
+                    set_current_exercice();
+                    display_grading_box();
                 }
                 else
                 {
-                    write_colored_text("<<<<<<<<<< FAILURE >>>>>>>>>>", "\x1b[31m", true);
+                    write_colored_text("<<<<<<<<<< FAILURE >>>>>>>>>>", "\e[91m", true);
                     multi_sleep(700);
                     std::cout << "You have failed the assignment." << std::endl;
                     std::cout << "" << std::endl;
                     std::cout << "(Press enter to continue...)" << std::endl;
                     std::string input;
                     std::getline(std::cin, input);
+                    assignment_data new_assignement{current_exercice, false};
+                    assignments_history.push_back(new_assignement);
+                    display_grading_box();
                 }
             }
             else
@@ -214,6 +195,71 @@ void ExamSimulator::set_current_exercice()
     ExerciceData random_ex = ExerciceData::get_random_exercice(filtered_exercices);
     current_exercice = random_ex;
     std::string home_directory = get_user_home_directory();
-    std::filesystem::path exercice_dir = home_directory + "/42-EXAM/rendu/";
-    std::filesystem::create_directories(exercice_dir);
+    std::filesystem::path ex_subject_dir = std::filesystem::path(home_directory) / "42-EXAM" / "subjects" / current_exercice.name;
+    std::filesystem::create_directories(ex_subject_dir);
+    std::filesystem::path old_subject_path = ".subjects/" + current_exercice.name + ".txt";
+    std::filesystem::path new_subject_path = ex_subject_dir / (current_exercice.name + ".txt");
+    std::filesystem::copy(old_subject_path, new_subject_path);
+    std::filesystem::path renamed_subject_path = ex_subject_dir / "subject.en.txt";
+    std::filesystem::rename(new_subject_path, renamed_subject_path);
+}
+
+void ExamSimulator::display_grading_box()
+{
+    std::cout << "==================================================================" << std::endl;
+    std::cout << "" << std::endl;
+    std::cout << "Mode: ";
+    write_colored_text("REAL", "\x1b[38;5;13m", false);
+    std::cout << " | Current Grade: ";
+    write_colored_text(std::to_string(current_grade), "\x1b[38;5;46m", false);
+    std::cout << " / " << std::to_string(max_grade) << std::endl;
+    std::cout << "" << std::endl;
+    std::cout << "  Level ";
+    write_colored_text(std::to_string(current_level), "\x1b[38;5;46m", false);
+    std::cout << ":" << std::endl;
+    for(size_t i = 0; i < assignments_history.size(); ++i)
+    {
+        write_colored_text("    " + std::to_string(assignment_index), "\x1b[38;5;11m", false);
+        std::cout << ": ";
+        write_colored_text(assignments_history[i].exercice.name, "\x1b[38;5;46m", false);
+        std::cout << " for ";
+        std::cout << std::to_string(exercice_xp);
+        std::cout << " potential points (";
+        write_colored_text(assignments_history[i].b_succes == true ? "Succes" : "Failure", assignments_history[i].b_succes == true ? "\x1b[38;5;46m" : "\e[91m", false);
+        std::cout << ")" << std::endl;
+        assignment_index++;
+    }
+    write_colored_text("    " + std::to_string(assignment_index), "\x1b[38;5;11m", false);
+    assignment_index = 0;
+    std::cout << ": ";
+    write_colored_text(current_exercice.name, "\x1b[38;5;46m", false);
+    std::cout << " for ";
+    std::cout << std::to_string(exercice_xp);
+    std::cout << " potential points (";
+    write_colored_text("Current", "\e[36m", false);
+    std::cout << ")" << std::endl;
+    std::cout << "" << std::endl;
+    std::cout << "Assignement: ";
+    write_colored_text(current_exercice.name, "\x1b[38;5;46m", false);
+    std::cout << " for ";
+    write_colored_text(std::to_string(exercice_xp), "\x1b[38;5;46m", false);
+    std::cout << "xp, try: ";
+    write_colored_text("0", "\x1b[38;5;11m", true);
+    std::cout << "" << std::endl;
+    std::cout << "Subject location:  ";
+    write_colored_text("~/42-EXAM/subjects/subject.en.txt", "\x1b[38;5;46m", true);
+    std::cout << "Exercise location: ";
+    write_colored_text("~/42-EXAM/rendu/" + current_exercice.name, "\e[91m", true);
+    std::cout << "" << std::endl;
+    std::cout << "End date: ";
+    write_colored_text("21/09/2024 23:26:38", "\x1b[38;5;46m", true);
+    std::cout << "Left time: ";
+    write_colored_text("7hrs, 59min and 15sec", "\x1b[38;5;46m", true);
+    std::cout << "" << std::endl;
+    std::cout << "==================================================================" << std::endl;
+    std::cout << "Use the \"";
+    write_colored_text("grademe", "\x1b[38;5;46m", false);
+    std::cout << "\" command to be graded, or \"";
+    write_colored_text("help", "\x1b[38;5;46m", false);
+    std::cout << "\" to get some help." << std::endl;
 }
