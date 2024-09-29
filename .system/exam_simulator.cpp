@@ -19,8 +19,8 @@ ExamSimulator::ExamSimulator()
     current_grade = 0;
     max_grade = 100;
     current_level = 0;
-    assignment_index = 0;
     exercice_xp = 6;
+    attempts = 0;
 }
 
 void ExamSimulator::on_select_function()
@@ -135,8 +135,10 @@ void ExamSimulator::DisplayExamPage()
                 {      
                     write_colored_text("<<<<<<<<<< SUCCESS >>>>>>>>>>", "\x1b[38;5;10m", true);
                     multi_sleep(2000);
-                    assignment_data new_assignement{current_exercice, true};
+                    assignment_data new_assignement{current_exercice, true, current_level};
                     assignments_history.push_back(new_assignement);
+                    attempts = 0;
+                    current_level++;
                     set_current_exercice();
                     display_grading_box();
                 }
@@ -149,8 +151,9 @@ void ExamSimulator::DisplayExamPage()
                     std::cout << "(Press enter to continue...)" << std::endl;
                     std::string input;
                     std::getline(std::cin, input);
-                    assignment_data new_assignement{current_exercice, false};
+                    assignment_data new_assignement{current_exercice, false, current_level};
                     assignments_history.push_back(new_assignement);
+                    attempts++;
                     display_grading_box();
                 }
             }
@@ -214,23 +217,29 @@ void ExamSimulator::display_grading_box()
     write_colored_text(std::to_string(current_grade), "\x1b[38;5;46m", false);
     std::cout << " / " << std::to_string(max_grade) << std::endl;
     std::cout << "" << std::endl;
-    std::cout << "  Level ";
-    write_colored_text(std::to_string(current_level), "\x1b[38;5;46m", false);
-    std::cout << ":" << std::endl;
-    for(size_t i = 0; i < assignments_history.size(); ++i)
+    for (int level = 0; level <= current_level; ++level)
     {
-        write_colored_text("    " + std::to_string(assignment_index), "\x1b[38;5;11m", false);
-        std::cout << ": ";
-        write_colored_text(assignments_history[i].exercice.name, "\x1b[38;5;46m", false);
-        std::cout << " for ";
-        std::cout << std::to_string(exercice_xp);
-        std::cout << " potential points (";
-        write_colored_text(assignments_history[i].b_succes == true ? "Succes" : "Failure", assignments_history[i].b_succes == true ? "\x1b[38;5;46m" : "\e[91m", false);
-        std::cout << ")" << std::endl;
-        assignment_index++;
+        std::cout << "  Level ";
+        write_colored_text(std::to_string(level), "\x1b[38;5;46m", false);
+        std::cout << ":" << std::endl;
+        int assignment_index = 0
+        for(size_t i = 0; i < assignments_history.size(); ++i)
+        {
+            if (assignments_history[i].level == level)
+            {
+                write_colored_text("    " + std::to_string(assignment_index), "\x1b[38;5;11m", false);
+                std::cout << ": ";
+                write_colored_text(assignments_history[i].exercice.name, "\x1b[38;5;46m", false);
+                std::cout << " for ";
+                std::cout << std::to_string(exercice_xp);
+                std::cout << " potential points (";
+                write_colored_text(assignments_history[i].b_succes == true ? "Success" : "Failure", assignments_history[i].b_succes == true ? "\x1b[38;5;46m" : "\e[91m", false);
+                std::cout << ")" << std::endl;
+                assignment_index++;
+            }
+        }
     }
     write_colored_text("    " + std::to_string(assignment_index), "\x1b[38;5;11m", false);
-    assignment_index = 0;
     std::cout << ": ";
     write_colored_text(current_exercice.name, "\x1b[38;5;46m", false);
     std::cout << " for ";
@@ -244,7 +253,7 @@ void ExamSimulator::display_grading_box()
     std::cout << " for ";
     write_colored_text(std::to_string(exercice_xp), "\x1b[38;5;46m", false);
     std::cout << "xp, try: ";
-    write_colored_text("0", "\x1b[38;5;11m", true);
+    write_colored_text(std::to_string(attempts), "\x1b[38;5;11m", true);
     std::cout << "" << std::endl;
     std::cout << "Subject location:  ";
     write_colored_text("~/42-EXAM/subjects/subject.en.txt", "\x1b[38;5;46m", true);
