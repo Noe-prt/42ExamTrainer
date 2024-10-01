@@ -5,10 +5,10 @@
 #include <stdexcept>
 #include <fstream>
 #include <filesystem>
-#include <chrono>
 #include <algorithm>
 #include <cctype>
 #include <thread>
+#include <iomanip>
 
 
 #ifdef _WIN32
@@ -109,21 +109,33 @@ bool compile_c_file(const std::string& file_path, const std::string& main_path)
 {
     if (!std::filesystem::exists(".outputs"))
         std::filesystem::create_directories(".outputs");
-    std::string command = "gcc " + file_path +  " " + main_path  + " -o ./.outputs/output_file";
+
+    std::string command = "gcc " + file_path + " " + main_path + " -o ./.outputs/output_file 2> .outputs/compile_errors.txt";
     int result = std::system(command.c_str());
+
+    // Vérifie si des erreurs de compilation ont été générées
+    std::ifstream error_file(".outputs/compile_errors.txt");
+    if (error_file.peek() != std::ifstream::traits_type::eof())
+    {
+        return false;
+    }
+    
     return result == 0;
 }
 
 std::string run_compiled_file(const std::vector<std::string>& args)
 {
-    std::string command = "./.outputs/output_file";
+    std::string command = "timeout 5s ./.outputs/output_file";
     for (const auto& arg : args)
     {
         command += " \"" + arg + "\"";
     }
     command += " > .outputs/temp_output.txt";
-    
-    std::system(command.c_str());
+    int result = std::system(command.c_str());
+    if (result == 124)
+    {
+        return "TIMEOUT";
+    }
     std::ifstream output_file(".outputs/temp_output.txt");
     std::stringstream buffer;
     buffer << output_file.rdbuf();
@@ -192,3 +204,31 @@ bool grade_me(const std::string& exercice_name)
     }
 }
 
+void display_exam_end_date(std::chrono::system_clock::time_point starting_date, int exam_duration)
+{
+    auto date_in_x_hours = starting_date + std::chrono::hours(exam_duration);
+    std::time_t time_in_x_hours = std::chrono::system_clock::to_time_t(date_in_x_hours);
+    std::tm* local_time = std::localtime(&time_in_x_hours);
+    std::ostringstream oss;
+    oss << std::put_time(local_time, "%d/%m/%Y %H:%M:%S");
+    write_colored_text(oss.str(), "\x1b[38;5;46m", true);
+}
+
+void display_exam_left_time(std::chrono::system_clock::time_point starting_date, int exam_duration) {
+    auto exam_end_time = starting_date + std::chrono::hours(exam_duration);
+    auto now = std::chrono::system_clock::now();
+    auto remaining_duration = exam_end_time - now;
+    if (remaining_duration <= std::chrono::seconds(0)) {
+        write_colored_text("Exam is over!", "\x1b[38;5;196m", true);  // Rouge pour indiquer que c'est terminé
+        return;
+    }
+    auto hours = std::chrono::duration_cast<std::chrono::hours>(remaining_duration).count();
+    remaining_duration -= std::chrono::hours(hours);
+    auto minutes = std::chrono::duration_cast<std::chrono::minutes>(remaining_duration).count();
+    remaining_duration -= std::chrono::minutes(minutes);
+    auto seconds = std::chrono::duration_cast<std::chrono::seconds>(remaining_duration).count();
+    std::ostringstream oss;
+    oss << "Left time: " << hours << "hrs, " 
+        << minutes << "min and " << seconds << "sec";
+    write_colored_text(oss.str(), "\x1b[38;5;46m", true);
+}

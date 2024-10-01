@@ -139,6 +139,9 @@ void ExerciceGrading::display_grading_page(ExerciceData exercice)
             std::getline(std::cin, input);
             if (input == "y" || input == "Y")
             {
+                std::cout << "Ok, making grading request to server now." << std::endl;
+                std::cout << "" << std::endl;
+                std::cout << "We will now wait for the job to complete." << std::endl;
                 std::cout << "Please be ";
                 write_colored_text("patient", "\x1b[38;5;46m", false);
                 std::cout << ", this ";

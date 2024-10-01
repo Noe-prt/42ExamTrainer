@@ -6,6 +6,7 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 #include <cstdio>
+#include <algorithm>
 #include <cstring>
 #include <pwd.h>
 
@@ -19,8 +20,10 @@ ExamSimulator::ExamSimulator()
     current_grade = 0;
     max_grade = 100;
     current_level = 0;
-    exercice_xp = 6;
+    exercice_points = 6;
     attempts = 0;
+    exs_by_level = 0;
+    exam_duration = 8;
 }
 
 void ExamSimulator::on_select_function()
@@ -89,6 +92,7 @@ void ExamSimulator::DisplayExamPage()
     std::cout << "\033[0m"; 
     std::cout << "Press a key to start exam 🏁" << std::endl;
     getchar();
+    starting_date = std::chrono::system_clock::now();
     display_grading_box();
     while (1)
     {
@@ -118,6 +122,9 @@ void ExamSimulator::DisplayExamPage()
             std::getline(std::cin, input);
             if (input == "y" || input == "Y")
             {
+                std::cout << "Ok, making grading request to server now." << std::endl;
+                std::cout << "" << std::endl;
+                std::cout << "We will now wait for the job to complete." << std::endl;
                 std::cout << "Please be ";
                 write_colored_text("patient", "\x1b[38;5;46m", false);
                 std::cout << ", this ";
@@ -131,30 +138,48 @@ void ExamSimulator::DisplayExamPage()
                 multi_sleep(2000);
                 std::cout << "waiting..." << std::endl;
                 multi_sleep(2000);
-                if (grade_me(current_exercice.name))
-                {      
-                    write_colored_text("<<<<<<<<<< SUCCESS >>>>>>>>>>", "\x1b[38;5;10m", true);
-                    multi_sleep(2000);
-                    assignment_data new_assignement{current_exercice, true, current_level};
-                    assignments_history.push_back(new_assignement);
-                    attempts = 0;
-                    current_level++;
-                    set_current_exercice();
-                    display_grading_box();
+                std::cout << "" << std::endl;
+                if (!check_exam_finish(starting_date, exam_duration))
+                {
+                    if (grade_me(current_exercice.name))
+                    {      
+                        write_colored_text("<<<<<<<<<< SUCCESS >>>>>>>>>>", "\x1b[38;5;10m", true);
+                        multi_sleep(700);
+                        std::cout << "" << std::endl;
+                        std::cout << "(Press enter to continue...)" << std::endl;
+                        std::string input;
+                        std::getline(std::cin, input);
+                        assignment_data new_assignement{current_exercice, true, current_level};
+                        assignments_history.push_back(new_assignement);
+                        attempts = 0;
+                        exs_by_level++;
+                        if (exs_by_level == 3)
+                        {
+                            current_level++;
+                            exs_by_level = 0;
+                        }
+                        current_grade += exercice_points;
+                        set_current_exercice();
+                        display_grading_box();
+                    }
+                    else
+                    {
+                        write_colored_text("<<<<<<<<<< FAILURE >>>>>>>>>>", "\e[91m", true);
+                        multi_sleep(700);
+                        std::cout << "You have failed the assignment." << std::endl;
+                        std::cout << "" << std::endl;
+                        std::cout << "(Press enter to continue...)" << std::endl;
+                        std::string input;
+                        std::getline(std::cin, input);
+                        assignment_data new_assignement{current_exercice, false, current_level};
+                        assignments_history.push_back(new_assignement);
+                        attempts++;
+                        display_grading_box();
+                    }
                 }
                 else
                 {
-                    write_colored_text("<<<<<<<<<< FAILURE >>>>>>>>>>", "\e[91m", true);
-                    multi_sleep(700);
-                    std::cout << "You have failed the assignment." << std::endl;
-                    std::cout << "" << std::endl;
-                    std::cout << "(Press enter to continue...)" << std::endl;
-                    std::string input;
-                    std::getline(std::cin, input);
-                    assignment_data new_assignement{current_exercice, false, current_level};
-                    assignments_history.push_back(new_assignement);
-                    attempts++;
-                    display_grading_box();
+                    write_colored_text("FinalExam is finish! grading requests are now disabled.", "\e[91m", true);
                 }
             }
             else
@@ -196,6 +221,15 @@ void ExamSimulator::set_current_exercice()
     std::vector<ExerciceData> exercices = ExerciceData::get_exercices(".data/exercices.json");
     std::vector<ExerciceData> filtered_exercices = ExerciceData::get_exercises_by_level(exercices, current_level);
     ExerciceData random_ex = ExerciceData::get_random_exercice(filtered_exercices);
+    while (std::find_if(assignments_history.begin(), assignments_history.end(), 
+               [&random_ex](const assignment_data& assignment) 
+               {
+                   return assignment.exercice.name == random_ex.name;
+               }) != assignments_history.end())
+    {
+        random_ex = ExerciceData::get_random_exercice(filtered_exercices);
+    }
+
     current_exercice = random_ex;
     std::string home_directory = get_user_home_directory();
     std::filesystem::path ex_subject_dir = std::filesystem::path(home_directory) / "42-EXAM" / "subjects" / current_exercice.name;
@@ -217,12 +251,13 @@ void ExamSimulator::display_grading_box()
     write_colored_text(std::to_string(current_grade), "\x1b[38;5;46m", false);
     std::cout << " / " << std::to_string(max_grade) << std::endl;
     std::cout << "" << std::endl;
+    int assignment_index = 0;
     for (int level = 0; level <= current_level; ++level)
     {
+        assignment_index = 0;
         std::cout << "  Level ";
         write_colored_text(std::to_string(level), "\x1b[38;5;46m", false);
         std::cout << ":" << std::endl;
-        int assignment_index = 0
         for(size_t i = 0; i < assignments_history.size(); ++i)
         {
             if (assignments_history[i].level == level)
@@ -231,7 +266,7 @@ void ExamSimulator::display_grading_box()
                 std::cout << ": ";
                 write_colored_text(assignments_history[i].exercice.name, "\x1b[38;5;46m", false);
                 std::cout << " for ";
-                std::cout << std::to_string(exercice_xp);
+                std::cout << std::to_string(exercice_points);
                 std::cout << " potential points (";
                 write_colored_text(assignments_history[i].b_succes == true ? "Success" : "Failure", assignments_history[i].b_succes == true ? "\x1b[38;5;46m" : "\e[91m", false);
                 std::cout << ")" << std::endl;
@@ -243,7 +278,7 @@ void ExamSimulator::display_grading_box()
     std::cout << ": ";
     write_colored_text(current_exercice.name, "\x1b[38;5;46m", false);
     std::cout << " for ";
-    std::cout << std::to_string(exercice_xp);
+    std::cout << std::to_string(exercice_points);
     std::cout << " potential points (";
     write_colored_text("Current", "\e[36m", false);
     std::cout << ")" << std::endl;
@@ -251,7 +286,7 @@ void ExamSimulator::display_grading_box()
     std::cout << "Assignement: ";
     write_colored_text(current_exercice.name, "\x1b[38;5;46m", false);
     std::cout << " for ";
-    write_colored_text(std::to_string(exercice_xp), "\x1b[38;5;46m", false);
+    write_colored_text(std::to_string(current_grade + exercice_points), "\x1b[38;5;46m", false);
     std::cout << "xp, try: ";
     write_colored_text(std::to_string(attempts), "\x1b[38;5;11m", true);
     std::cout << "" << std::endl;
@@ -261,9 +296,9 @@ void ExamSimulator::display_grading_box()
     write_colored_text("~/42-EXAM/rendu/" + current_exercice.name, "\e[91m", true);
     std::cout << "" << std::endl;
     std::cout << "End date: ";
-    write_colored_text("21/09/2024 23:26:38", "\x1b[38;5;46m", true);
+    display_exam_end_date(starting_date, exam_duration);
     std::cout << "Left time: ";
-    write_colored_text("7hrs, 59min and 15sec", "\x1b[38;5;46m", true);
+    display_exam_left_time(starting_date, exam_duration);
     std::cout << "" << std::endl;
     std::cout << "==================================================================" << std::endl;
     std::cout << "Use the \"";
@@ -271,4 +306,13 @@ void ExamSimulator::display_grading_box()
     std::cout << "\" command to be graded, or \"";
     write_colored_text("help", "\x1b[38;5;46m", false);
     std::cout << "\" to get some help." << std::endl;
+}
+
+bool ExamSimulator::check_exam_finish(std::chrono::system_clock::time_point starting_date, int exam_duration)
+{
+    auto exam_end_time = starting_date + std::chrono::hours(exam_duration);
+    
+    auto now = std::chrono::system_clock::now();
+
+    return now >= exam_end_time;
 }
