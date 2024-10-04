@@ -19,7 +19,7 @@ private:
     int exercice_points;
     int max_grade;
     int attempts;
-    int exs_by_level;
+    int current_sub_level;
     int exam_duration;
     ExerciceData current_exercice;
     void set_current_exercice();

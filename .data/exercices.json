@@ -3,6 +3,7 @@
     {
       "name": "aff_a",
       "level": 0,
+      "sub_level": 0,
       "type": "program",
       "inputs": [
         []
@@ -12,8 +13,57 @@
       ]
     },
     {
+      "name": "aff_z",
+      "level": 0,
+      "sub_level": 0,
+      "type": "program",
+      "inputs": [
+        []
+      ],
+      "outputs": [
+        "z\n"
+      ]
+    },
+    {
+      "name": "ft_countdown",
+      "level": 0,
+      "sub_level": 0,
+      "type": "program",
+      "inputs": [
+        []
+      ],
+      "outputs": [
+        "9876543210\n"
+      ]
+    },
+    {
+      "name": "hello",
+      "level": 0,
+      "sub_level": 0,
+      "type": "program",
+      "inputs": [
+        []
+      ],
+      "outputs": [
+        "Hello World!\n"
+      ]
+    },
+    {
+      "name": "maff_alpha",
+      "level": 0,
+      "sub_level": 0,
+      "type": "program",
+      "inputs": [
+        []
+      ],
+      "outputs": [
+        "aBcDeFgHiJkLmNoPqRsTuVwXyZ\n"
+      ]
+    },
+    {
       "name": "aff_first_param",
       "level": 0,
+      "sub_level": 1,
       "type": "program",
       "inputs": [
         [
@@ -29,6 +79,7 @@
     {
       "name": "aff_last_param",
       "level": 0,
+      "sub_level": 1,
       "type": "program",
       "inputs": [
         [
@@ -42,8 +93,57 @@
       ]
     },
     {
+      "name": "maff_revalpha",
+      "level": 0,
+      "sub_level": 1,
+      "type": "program",
+      "inputs": [
+        []
+      ],
+      "outputs": [
+        "zYxWvUtSrQpOnMlKjIhGfEdCbA\n"
+      ]
+    },
+    {
+      "name": "only_a",
+      "level": 0,
+      "sub_level": 1,
+      "type": "program",
+      "inputs": [
+        []
+      ],
+      "outputs": [
+        "a"
+      ]
+    },
+    {
+      "name": "only_z",
+      "level": 0,
+      "sub_level": 1,
+      "type": "program",
+      "inputs": [
+        []
+      ],
+      "outputs": [
+        "z"
+      ]
+    },
+    {
+      "name": "ft_strcpy",
+      "level": 1,
+      "sub_level": 0,
+      "type": "function",
+      "inputs": [
+        []
+      ],
+      "outputs": [
+        ""
+      ]
+    },
+    {
       "name": "ft_strlen",
       "level": 1,
+      "sub_level": 0,
       "type": "function",
       "inputs": [
         []
@@ -55,6 +155,7 @@
     {
       "name": "repeat_alpha",
       "level": 1,
+      "sub_level": 0,
       "type": "program",
       "inputs": [
         [
@@ -66,19 +167,9 @@
       ]
     },
     {
-      "name": "ft_swap",
-      "level": 1,
-      "type": "function",
-      "inputs": [
-        []
-      ],
-      "outputs": [
-        ""
-      ]
-    },
-    {
       "name": "search_and_replace",
       "level": 1,
+      "sub_level": 0,
       "type": "program",
       "inputs": [
         [
@@ -94,32 +185,63 @@
     {
       "name": "ulstr",
       "level": 1,
+      "sub_level": 0,
       "type": "program",
       "inputs": [
-        [
-          "S'enTOuRer dE sECreT eSt uN sIGnE De mAnQuE De coNNaiSSanCe.  "
-        ]
+        ["L'eSPrit nE peUt plUs pRogResSer s'Il staGne et sI peRsIsTent VAnIte et auto-justification."],
+        ["S'enTOuRer dE sECreT eSt uN sIGnE De mAnQuE De coNNaiSSanCe.  "],
+        ["3:21 Ba  tOut  moUn ki Ka di KE m'en Ka fe fot"],
+        [""]
       ],
       "outputs": [
-        "s'ENtoUrER De SecREt EsT Un SigNe dE MaNqUe dE COnnAIssANcE.  \n"
+        "l'EspRIT Ne PEuT PLuS PrOGrESsER S'iL STAgNE ET Si PErSiStENT vaNiTE ET AUTO-JUSTIFICATION.\n",
+        "s'ENtoUrER De SecREt EsT Un SigNe dE MaNqUe dE COnnAIssANcE.  \n",
+        "3:21 bA  ToUT  MOuN KI kA DI ke M'EN kA FE FOT\n",
+        "\n"
       ]
     },
     {
       "name": "rot_13",
       "level": 1,
+      "sub_level": 1,
       "type": "program",
       "inputs": [
-        [
-          "AkjhZ zLKIJz , 23y "
-        ]
+          ["abc"],
+          ["My horse is Amazing."],
+          ["AkjhZ zLKIJz , 23y "],
+          [""]
       ],
       "outputs": [
-        "NxwuM mYXVWm , 23l \n"
+        "nop\n",
+        "Zl ubefr vf Nznmvat.\n",
+        "NxwuM mYXVWm , 23l \n",
+        "\n"
       ]
     },
     {
-      "name": "ft_strcpy",
+      "name": "first_word",
       "level": 1,
+      "sub_level": 2,
+      "type": "program",
+      "inputs": [
+        ["FOR PONY"],
+        ["this        ...       is sparta, then again, maybe    not"],
+        ["   "],
+        ["a", "b"],
+        ["  lorem,ipsum  "]
+      ],
+      "outputs": [
+        "FOR\n",
+        "this\n",
+        "\n",
+        "\n",
+        "lorem,ipsum\n"
+      ]
+    },
+    {
+      "name": "ft_swap",
+      "level": 1,
+      "sub_level": 2,
       "type": "function",
       "inputs": [
         []
@@ -129,45 +251,43 @@
       ]
     },
     {
-      "name": "first_word",
-      "level": 1,
-      "type": "program",
-      "inputs": [
-        []
-      ],
-      "outputs": [
-        "this\n"
-      ]
-    },
-    {
       "name": "rev_print",
       "level": 1,
+      "sub_level": 3,
       "type": "program",
       "inputs": [
-        [
-          "dub0 a POIL"
-        ]
+        ["zaz"],
+        ["dub0 a POIL"],
+        [""]
       ],
       "outputs": [
-        "LIOP a 0bud\n"
+        "zaz\n",
+        "LIOP a 0bud\n",
+        "\n"
       ]
     },
     {
       "name": "rotone",
       "level": 1,
+      "sub_level": 4,
       "type": "program",
       "inputs": [
-        [
-          "Les stagiaires du staff ne sentent pas toujours tres bon."
-        ]
+        ["abc"],
+        ["Les stagiaires du staff ne sentent pas toujours tres bon."],
+        ["AkjhZ zLKIJz , 23y "],
+        [""]
       ],
       "outputs": [
-        "Mft tubhjbjsft ev tubgg of tfoufou qbt upvkpvst usft cpo.\n"
+        "bcd\n",
+        "Mft tubhjbjsft ev tubgg of tfoufou qbt upvkpvst usft cpo.\n",
+        "BlkiA aMLJKa , 23z \n",
+        "\n"
       ]
     },
     {
       "name": "ft_atoi",
       "level": 2,
+      "sub_level": 0,
       "type": "function",
       "inputs": [
         []
@@ -179,6 +299,7 @@
     {
       "name": "ft_strdup",
       "level": 2,
+      "sub_level": 0,
       "type": "function",
       "inputs": [
         []
@@ -190,90 +311,37 @@
     {
       "name": "inter",
       "level": 2,
+      "sub_level": 0,
       "type": "program",
       "inputs": [
-        [
-          "padinton",
-          "paqefwtdjetyiytjneytjoeyjnejeyj"
-        ]
+        ["padinton", "paqefwtdjetyiytjneytjoeyjnejeyj"],
+        ["ddf6vewg64f", "gtwthgdwthdwfteewhrtag6h4ffdhsd"],
+        ["rien", "cette phrase ne cache rien"],
+        [""]
       ],
       "outputs": [
-        "padinto\n"
+        "padinto\n",
+        "df6ewg4\n",
+        "rien\n",
+        "\n"
       ]
     },
     {
       "name": "last_word",
       "level": 2,
+      "sub_level": 0,
       "type": "program",
       "inputs": [
-        [
-          "FOR PONY"
-        ],
-        [
-          "this        ...       is sparta, then again, maybe    not"
-        ],
-        [
-          "a",
-          "b"
-        ],
-        [
-          "  lorem,ipsum  "
-        ]
+        ["FOR PONY"],
+        ["this        ...       is sparta, then again, maybe    not"],
+        ["a", "b"],
+        ["  lorem,ipsum  "]
       ],
       "outputs": [
         "PONY\n",
         "not\n",
         "\n",
         "lorem,ipsum\n"
-      ]
-    },
-    {
-      "name": "union",
-      "level": 2,
-      "type": "program",
-      "inputs": [
-        [
-          "ddf6vewg64f",
-          "gtwthgdwthdwfteewhrtag6h4ffdhsd"
-        ]
-      ],
-      "outputs": [
-        "df6vewg4thras\n"
-      ]
-    },
-    {
-      "name": "alpha_mirror",
-      "level": 2,
-      "type": "program",
-      "inputs": [
-        [
-          "My horse is Amazing."
-        ]
-      ],
-      "outputs": [
-        "Nb slihv rh Znzarmt.\n"
-      ]
-    },
-    {
-      "name": "ft_strcmp",
-      "level": 2,
-      "type": "function",
-      "inputs": [
-        []
-      ],
-      "outputs": [
-        ""
-      ]
-    },
-    {
-      "name": "ft_rrange",
-      "level": 3,
-      "type": "function",
-      "inputs": [
-        []
-      ],
-      "outputs": [
-        ""
       ]
     }
   ]

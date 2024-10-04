@@ -7,6 +7,7 @@
 #include <readline/history.h>
 #include <cstdio>
 #include <algorithm>
+#include <stdexcept>
 #include <cstring>
 #include <pwd.h>
 
@@ -20,9 +21,9 @@ ExamSimulator::ExamSimulator()
     current_grade = 0;
     max_grade = 100;
     current_level = 0;
+    current_sub_level = 0;
     exercice_points = 6;
     attempts = 0;
-    exs_by_level = 0;
     exam_duration = 8;
 }
 
@@ -152,14 +153,19 @@ void ExamSimulator::DisplayExamPage()
                         assignment_data new_assignement{current_exercice, true, current_level};
                         assignments_history.push_back(new_assignement);
                         attempts = 0;
-                        exs_by_level++;
-                        if (exs_by_level == 3)
-                        {
-                            current_level++;
-                            exs_by_level = 0;
-                        }
                         current_grade += exercice_points;
-                        set_current_exercice();
+                        try
+                        {
+                            current_sub_level++;
+                            set_current_exercice();
+                        }
+                        catch (const std::exception& e)
+                        {
+                            std::cerr << "ERROR: " << e.what() << std::endl;
+                            current_sub_level = 0;
+                            current_level++;
+                            set_current_exercice();
+                        }
                         display_grading_box();
                     }
                     else
@@ -219,15 +225,20 @@ void ExamSimulator::DisplayExamPage()
 void ExamSimulator::set_current_exercice()
 {
     std::vector<ExerciceData> exercices = ExerciceData::get_exercices(".data/exercices.json");
-    std::vector<ExerciceData> filtered_exercices = ExerciceData::get_exercises_by_level(exercices, current_level);
-    ExerciceData random_ex = ExerciceData::get_random_exercice(filtered_exercices);
+    std::vector<ExerciceData> exercices_by_level = ExerciceData::get_exercises_by_level(exercices, current_level);
+    std::vector<ExerciceData> exercices_by_sub_level = ExerciceData::get_exercises_by_sub_level(exercices_by_level, current_sub_level);
+    if (exercices_by_sub_level.empty())
+    {
+        throw std::runtime_error("No exercises found for the specified sub-level.");
+    }
+    ExerciceData random_ex = ExerciceData::get_random_exercice(exercices_by_sub_level);
     while (std::find_if(assignments_history.begin(), assignments_history.end(), 
-               [&random_ex](const assignment_data& assignment) 
+               [&random_ex](const assignment_data& assignment)
                {
                    return assignment.exercice.name == random_ex.name;
                }) != assignments_history.end())
     {
-        random_ex = ExerciceData::get_random_exercice(filtered_exercices);
+        random_ex = ExerciceData::get_random_exercice(exercices_by_sub_level);
     }
 
     current_exercice = random_ex;

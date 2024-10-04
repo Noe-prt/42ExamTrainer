@@ -16,6 +16,7 @@ std::vector<ExerciceData> ExerciceData::get_exercices(const std::string& filenam
         ExerciceData ex;
         ex.name = item["name"].get<std::string>();
         ex.level = item["level"].get<int>();
+        ex.sub_level = item["sub_level"].get<int>();
         ex.is_function = (item["type"].get<std::string>() == "function");
         ex.inputs = item["inputs"].get<std::vector<std::vector<std::string>>>();
         ex.outputs = item["outputs"].get<std::vector<std::string>>();
@@ -33,6 +34,19 @@ std::vector<ExerciceData> ExerciceData::get_exercises_by_level(const std::vector
         [level](const ExerciceData& ex)
         {
             return ex.level == level;
+        }
+    );
+    return filtered_exercices;
+}
+
+std::vector<ExerciceData> ExerciceData::get_exercises_by_sub_level(const std::vector<ExerciceData>& exercises, int sub_level)
+{
+    std::vector<ExerciceData> filtered_exercices;
+    
+    std::copy_if(exercises.begin(), exercises.end(), std::back_inserter(filtered_exercices),
+        [sub_level](const ExerciceData& ex)
+        {
+            return ex.sub_level == sub_level;
         }
     );
     return filtered_exercices;
